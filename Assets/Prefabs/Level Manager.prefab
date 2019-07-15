@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6922139627432007191}
   - component: {fileID: 6922139627432007190}
   m_Layer: 0
-  m_Name: ___ Level Manager ___
+  m_Name: Level Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f32ee27da35224ea614ea81c3cc228, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  greyBackground: {fileID: 0}
-  levelSelect: {fileID: 0}
-  lvlDisplay: {fileID: 0}
   maxLvl: 3

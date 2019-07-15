@@ -36,7 +36,7 @@ public class BallMovement : MonoBehaviour
     [SerializeField] private GameObject trajectory;
     [SerializeField] private int trajectoryVerts = 30;
 
-    private ShotsAndTimer shotsAndTimer;
+    private UiManager shotsAndTimer;
     private Slowmotion slowmotion;
 
     void Start()
@@ -50,7 +50,7 @@ public class BallMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         line = trajectory.GetComponent<LineRenderer>();
         slowmotion = FindObjectOfType<Slowmotion>();
-        shotsAndTimer = FindObjectOfType<ShotsAndTimer>();
+        shotsAndTimer = FindObjectOfType<UiManager>();
 
         rb.gravityScale = 0;
     }
