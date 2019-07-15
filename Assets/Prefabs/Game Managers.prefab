@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9215554901373117934}
   - component: {fileID: 1834010218}
   - component: {fileID: 260343801526604637}
+  - component: {fileID: 483716548}
   m_Layer: 0
   m_Name: Game Managers
   m_TagString: Untagged
@@ -44,9 +45,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8a484724c9def438f6d49aa94fc3e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxShots: 3
   shotDisplay: {fileID: 0}
   timeDisplay: {fileID: 0}
+  greyBackground: {fileID: 0}
+  levelSelect: {fileID: 0}
+  lvlDisplay: {fileID: 0}
+  tutorialParent: {fileID: 0}
+  tutorialScreenBlock: {fileID: 0}
+  tutMouse: {fileID: 0}
+  tutClick: {fileID: 0}
 --- !u!114 &260343801526604637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,3 +116,18 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &483716548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9215554901373117933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3d8cfc198495214daf6b5e8344aaa84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 5856212610299442089, guid: 4c6b88f3100885843ab31c4a465d013f,
+    type: 3}
+  maxShots: 3

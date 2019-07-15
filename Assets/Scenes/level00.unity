@@ -203,7 +203,7 @@ PrefabInstance:
       objectReference: {fileID: 5097493639065814875}
     - target: {fileID: 1834010218, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
       propertyPath: maxShots
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1834010218, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
       propertyPath: levelSelect
@@ -237,6 +237,10 @@ PrefabInstance:
       propertyPath: tutClick
       value: 
       objectReference: {fileID: 1366532675}
+    - target: {fileID: 483716548, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
+      propertyPath: maxShots
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
 --- !u!114 &207316745 stripped

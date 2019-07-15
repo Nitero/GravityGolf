@@ -879,13 +879,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1834010218, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
-      propertyPath: timeDisplay
-      value: 
-      objectReference: {fileID: 1714163582}
-    - target: {fileID: 1834010218, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
       propertyPath: shotDisplay
       value: 
       objectReference: {fileID: 1714163583}
+    - target: {fileID: 1834010218, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
+      propertyPath: timeDisplay
+      value: 
+      objectReference: {fileID: 1714163582}
     - target: {fileID: 1834010218, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
       propertyPath: greyBackground
       value: 
@@ -898,6 +898,10 @@ PrefabInstance:
       propertyPath: lvlDisplay
       value: 
       objectReference: {fileID: 1714163579}
+    - target: {fileID: 483716548, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
+      propertyPath: maxShots
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f6a832d013403c4c84509398d09f26b, type: 3}
 --- !u!114 &1695351859 stripped

@@ -7,7 +7,7 @@ using DG.Tweening;
 
 public class UiManager : MonoBehaviour
 {
-    [SerializeField] private int maxShots;
+
     [SerializeField] private TextMeshProUGUI shotDisplay;
     [SerializeField] private TextMeshProUGUI timeDisplay;
     [Space]
@@ -21,16 +21,10 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GameObject tutMouse;
     [SerializeField] private GameObject tutClick;
 
-    private float timer;
-    private int remainingShots;
-    private bool timerStarted;
     private bool sceneSelectToggled;
 
     void Start()
     {
-        remainingShots = maxShots;
-        shotDisplay.text = "Shots: " + remainingShots;
-
 
         if (PlayerPrefs.HasKey("sceneSelectToggled"))
             sceneSelectToggled = PlayerPrefs.GetInt("sceneSelectToggled") > 0 ? true : false;
@@ -43,30 +37,15 @@ public class UiManager : MonoBehaviour
 
     void Update()
     {
-        if(timerStarted)
-        {
-            timer += Time.deltaTime;
-            //timeDisplay.text = timer;
-        }
+
     }
 
-    public void startTimer()
-    {
-        timerStarted = true;
-    }
+    
 
-    public void didShot()
+    public void displayShots(int remainingShots)
     {
-        remainingShots--;
         shotDisplay.text = "Shots: " + remainingShots;
     }
-
-    public int getShots()
-    {
-        return remainingShots;
-    }
-
-
 
 
     public void updateLevelDisplay(string lvlString, int maxLvl)
@@ -141,7 +120,7 @@ public class UiManager : MonoBehaviour
         // TODO: use more .setEase()
 
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
 
         tutorialScreenBlock.GetComponent<Image>().DOColor(Color.clear, 1f);
         yield return new WaitForSeconds(1f);

@@ -10,10 +10,12 @@ public class LevelManager : MonoBehaviour
     private int lvl;
 
     private UiManager uiManager;
+    private BallMovement player;
 
     void Start()
     {
         uiManager = FindObjectOfType<UiManager>();
+        player = FindObjectOfType<BallMovement>();
 
         var sceneName = SceneManager.GetActiveScene().name;
         var lvlString = sceneName.Substring(sceneName.Length - 2);
@@ -34,9 +36,11 @@ public class LevelManager : MonoBehaviour
 
     public void restart()
     {
-        string lvlString = lvl.ToString();
+        player.restarted();
+
+        /*string lvlString = lvl.ToString();
         if (lvl < 9) lvlString = "0" + lvlString;
-        SceneManager.LoadScene("level" + lvlString);
+        SceneManager.LoadScene("level" + lvlString);*/
     }
 
     public void nextLvl()

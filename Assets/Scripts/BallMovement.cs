@@ -15,6 +15,7 @@ public class BallMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 aimDir = Vector2.zero;
 
+    private Vector2 originalPos;
     private bool hitGoal;
     private LineRenderer line;
 
@@ -36,7 +37,7 @@ public class BallMovement : MonoBehaviour
     [SerializeField] private GameObject trajectory;
     [SerializeField] private int trajectoryVerts = 30;
 
-    private UiManager shotsAndTimer;
+    private GameLoop mainLogic;
     private Slowmotion slowmotion;
 
     void Start()
@@ -50,9 +51,10 @@ public class BallMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         line = trajectory.GetComponent<LineRenderer>();
         slowmotion = FindObjectOfType<Slowmotion>();
-        shotsAndTimer = FindObjectOfType<UiManager>();
+        mainLogic = FindObjectOfType<GameLoop>();
 
-        rb.gravityScale = 0;
+        //rb.gravityScale = 0;
+        originalPos = transform.position;
     }
 
 
@@ -112,7 +114,7 @@ public class BallMovement : MonoBehaviour
 
 
 
-        if (isTouching && shotsAndTimer.getShots() > 0 && !hitGoal)
+        if (isTouching && mainLogic.getShots() > 0 && !hitGoal)
         {
             float dragDist = Vector2.Distance(Camera.main.ScreenToWorldPoint(touchB), Camera.main.ScreenToWorldPoint(touchA));
             shootStrength = dragDist.Remap(dragDistMinMax.x, dragDistMinMax.y, shootStrMinMax.x, shootStrMinMax.y);
@@ -139,7 +141,7 @@ public class BallMovement : MonoBehaviour
         if (!hitGoal)
         {
             // Mouse & Touch input
-            if (isTouching && shotsAndTimer.getShots() > 0)
+            if (isTouching && mainLogic.getShots() > 0)
             {
                 var offset = Camera.main.ScreenToWorldPoint(touchB) - Camera.main.ScreenToWorldPoint(touchA);
 
@@ -157,13 +159,13 @@ public class BallMovement : MonoBehaviour
             else
             {
 
-                if (wasTouchingLastFixed && shotsAndTimer.getShots() > 0)
+                if (wasTouchingLastFixed && mainLogic.getShots() > 0)
                 {
                     rb.gravityScale = 1;
                     wasTouchingLastFixed = false;
                     rb.AddForce(-aimDir * shootStrength, ForceMode2D.Impulse);
 
-                    shotsAndTimer.didShot();
+                    mainLogic.didShot();
 
                     StartCoroutine(hideDragIndication());
                 }
@@ -301,7 +303,7 @@ public class BallMovement : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag == "KillBounds")
-            FindObjectOfType<LevelManager>().restart();
+            died();
     }
 
     public float getMagnitude()
@@ -313,6 +315,9 @@ public class BallMovement : MonoBehaviour
     {
         rb.gravityScale = 0;
         hitGoal = true;
+
+        //GetComponent<Collider2D>().enabled = false; //doesn't work bcz goal can't suck you in anymore
+        gameObject.layer = LayerMask.NameToLayer("Collide With Nothing");
 
         slowmotion.hitGoal(true);
 
@@ -373,7 +378,6 @@ public class BallMovement : MonoBehaviour
     }
 
 
-
     private bool IsPointerOverUIObject() //https://answers.unity.com/questions/1073979/android-touches-pass-through-ui-elements.html
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
@@ -382,6 +386,63 @@ public class BallMovement : MonoBehaviour
         EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
         return results.Count > 0;
     }
+
+
+
+    public Vector2 getOrgPos()
+    {
+        return originalPos;
+    }
+
+    private void died()
+    {
+        //effect on the edge of camera where died
+        //screenshake
+
+        Destroy(dragIndication);
+        mainLogic.resetLevel();
+        mainLogic.respawnPlayer();
+    }
+
+    public void restarted()
+    {
+        //effect on the ball
+
+        Destroy(dragIndication);
+        mainLogic.resetLevel();
+        mainLogic.respawnPlayer();
+    }
+
+
+    /*
+    private void died()
+    {
+        //effect on the edge of camera where died
+        //screenshake
+
+        resetPlayerPosAndOrient();
+        mainLogic.resetShots();
+    }
+
+    public void restarted()
+    {
+        //effect on the ball
+
+        resetPlayerPosAndOrient();
+        mainLogic.resetShots();
+    }
+
+    private void resetPlayerPosAndOrient()
+    {
+        // order is important
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        transform.eulerAngles = Vector3.zero;
+        transform.position = originalPos;
+
+        rb.gravityScale = 0; //without this is more fun as there is small bounce, but when resetting when fly into portal then ball rolls after reset... maybe use drag or disable collider for a sec with yield return null
+    }
+    */
 }
 
 
