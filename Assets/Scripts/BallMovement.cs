@@ -17,6 +17,7 @@ public class BallMovement : MonoBehaviour
 
     private Vector2 originalPos;
     private bool hitGoal;
+    private bool inTutorial = true;
     private LineRenderer line;
 
     private bool wasTouchingLastFixed;
@@ -82,23 +83,25 @@ public class BallMovement : MonoBehaviour
                 isTouching = false;
         }
 
-        /*
+        
         else if (Input.touchCount > 0) //Touch input (only one finger)
         {
             Touch t = Input.GetTouch(0);
 
             //int id = t.fingerId;
 
-            if (t.phase == TouchPhase.Began)
+            if (t.phase == TouchPhase.Began && !IsPointerOverUIObject())
             {
                 touchA = t.position;
 
-                dragInner.position = touchA;
-                dragOutter.position = touchA;
+                //dragInner.position = touchA;
+                //dragOutter.position = touchA;
+
                 isTouching = true;
             }
-            if (t.phase == TouchPhase.Moved)
+            if (t.phase == TouchPhase.Moved && isTouching)
             {
+                isTouching = true;
                 touchB = t.position;
             }
             if (t.phase == TouchPhase.Stationary)
@@ -110,11 +113,11 @@ public class BallMovement : MonoBehaviour
                 isTouching = false;
             }
         }
-        */
+        /**/
 
 
 
-        if (isTouching && mainLogic.getShots() > 0 && !hitGoal)
+        if (!hitGoal && isTouching && mainLogic.getShots() > 0)
         {
             float dragDist = Vector2.Distance(Camera.main.ScreenToWorldPoint(touchB), Camera.main.ScreenToWorldPoint(touchA));
             shootStrength = dragDist.Remap(dragDistMinMax.x, dragDistMinMax.y, shootStrMinMax.x, shootStrMinMax.y);
@@ -123,6 +126,8 @@ public class BallMovement : MonoBehaviour
             drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass));
 
             slowmotion.setDragging(true);
+
+            showDragIndication();
         }
         else
         {
@@ -130,12 +135,14 @@ public class BallMovement : MonoBehaviour
 
             slowmotion.setDragging(false);
         }
+
     }
 
     private void FixedUpdate()
     {
         //var direction = Vector2.zero;
 
+        if (inTutorial) return;
         
 
         if (!hitGoal)
@@ -154,7 +161,6 @@ public class BallMovement : MonoBehaviour
                 //direction = Vector2.ClampMagnitude(offset, 1);
                 //dragInner.position = new Vector2(touchA.x + direction.x * joystickOffset, touchA.y + direction.y * joystickOffset);
 
-                showDragIndication();
             }
             else
             {
@@ -335,16 +341,16 @@ public class BallMovement : MonoBehaviour
 
     private void showDragIndication()
     {
-        dragIndication.SetActive(true);
-        dragInner.position = Camera.main.ScreenToWorldPoint(touchA);
-        dragOutter.position = Camera.main.ScreenToWorldPoint(touchB);
-        dragInner.position = new Vector3(dragInner.position.x, dragInner.position.y, 0);
-        dragOutter.position = new Vector3(dragOutter.position.x, dragOutter.position.y, 0);
+        var inner = Camera.main.ScreenToWorldPoint(touchA);
+        var outter = Camera.main.ScreenToWorldPoint(touchB);
+        dragInner.position = new Vector3(inner.x, inner.y, 0);
+        dragOutter.position = new Vector3(outter.x, outter.y, 0);
         dragLine.SetPosition(0, dragInner.position);
         dragLine.SetPosition(1, dragInner.position + 0.5f * (dragOutter.position - dragInner.position));//Vector2.Lerp(dragInner.position, dragOutter.position, (dragInner.position - dragOutter.position).magnitude));
         dragLine.SetPosition(2, dragOutter.position);
         float dragDist = Vector2.Distance(dragInner.position, dragOutter.position);
         dragLine.startWidth = dragDist.Remap(dragDistMinMax.x, dragDistMinMax.y, dragLineMinMaxWidth.y, dragLineMinMaxWidth.x);
+        dragIndication.SetActive(true);
     }
 
     private IEnumerator hideDragIndication()
@@ -443,6 +449,11 @@ public class BallMovement : MonoBehaviour
         rb.gravityScale = 0; //without this is more fun as there is small bounce, but when resetting when fly into portal then ball rolls after reset... maybe use drag or disable collider for a sec with yield return null
     }
     */
+
+    public void notInTut()
+    {
+        inTutorial = false;
+    }
 }
 
 

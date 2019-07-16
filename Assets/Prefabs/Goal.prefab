@@ -180,8 +180,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballLessMagnitudeStop: 3
+  objLessMagnitudeStop: 5
   ballShrinkDur: 2
   ballShrinkEase: 9
+  objShrinkDur: 2
+  objShrinkEase: 9
+  objRotSpeed: 180
   spinSpeed: 1
   shrinkDur: 1
   shrinkEase: 1

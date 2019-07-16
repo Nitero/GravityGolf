@@ -23,7 +23,7 @@ public class UiManager : MonoBehaviour
 
     private bool sceneSelectToggled;
 
-    void Start()
+    void Awake() //Start
     {
 
         if (PlayerPrefs.HasKey("sceneSelectToggled"))
@@ -120,10 +120,11 @@ public class UiManager : MonoBehaviour
         // TODO: use more .setEase()
 
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2.5f);
 
-        tutorialScreenBlock.GetComponent<Image>().DOColor(Color.clear, 1f);
-        yield return new WaitForSeconds(1f);
+        tutorialScreenBlock.GetComponent<Image>().DOColor(Color.clear, 0.5f);
+        yield return new WaitForSeconds(0.5f);
         tutorialScreenBlock.SetActive(false);
+        FindObjectOfType<BallMovement>().notInTut();
     }
 }

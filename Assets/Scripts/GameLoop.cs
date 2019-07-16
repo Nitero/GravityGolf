@@ -64,8 +64,15 @@ public class GameLoop : MonoBehaviour
 
     public void respawnPlayer()
     {
+
+        var dragInds = FindObjectsOfType<LineRenderer>();
+        foreach (LineRenderer d in dragInds)
+            Destroy(d);
+
         var orgPos = player.GetComponent<BallMovement>().getOrgPos();
         Destroy(player);
         player = Instantiate(playerPrefab, orgPos, Quaternion.identity);
+        player.GetComponent<BallMovement>().notInTut();
+
     }
 }

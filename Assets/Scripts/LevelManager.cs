@@ -12,7 +12,7 @@ public class LevelManager : MonoBehaviour
     private UiManager uiManager;
     private BallMovement player;
 
-    void Start()
+    void Awake() //Start
     {
         uiManager = FindObjectOfType<UiManager>();
         player = FindObjectOfType<BallMovement>();
@@ -25,6 +25,7 @@ public class LevelManager : MonoBehaviour
 
 
         if (lvl == 0) uiManager.tutorialAnimation();
+        else player.notInTut();
     }
 
 
