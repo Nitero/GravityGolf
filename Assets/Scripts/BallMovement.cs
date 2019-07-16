@@ -8,6 +8,8 @@ public class BallMovement : MonoBehaviour
 {
     [SerializeField] private Vector2 shootStrMinMax;
     [SerializeField] private Vector2 dragDistMinMax; //above doesn't do more strength, below and it can be released to abort
+    [SerializeField] private float dragDistOutBeforeCanRelease = 1f; 
+    [SerializeField] private float dragReleaseDist = 0.5f; 
     //[SerializeField] private float dragToStrMulti = ;
     private float shootStrength;
     [SerializeField] private bool useMouse = true;
@@ -16,6 +18,7 @@ public class BallMovement : MonoBehaviour
     private Vector2 aimDir = Vector2.zero;
 
     private Vector2 originalPos;
+    private bool canRelease;
     private bool hitGoal;
     private bool inTutorial = true;
     private LineRenderer line;
@@ -120,7 +123,11 @@ public class BallMovement : MonoBehaviour
         if (!hitGoal && isTouching && mainLogic.getShots() > 0)
         {
             float dragDist = Vector2.Distance(Camera.main.ScreenToWorldPoint(touchB), Camera.main.ScreenToWorldPoint(touchA));
+            dragDist = Mathf.Clamp(dragDist, dragDistMinMax.x, dragDistMinMax.y);
             shootStrength = dragDist.Remap(dragDistMinMax.x, dragDistMinMax.y, shootStrMinMax.x, shootStrMinMax.y);
+
+            if(dragDist >= dragDistOutBeforeCanRelease) canRelease = true;
+                
             //trajectoryVerts
 
             drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass));
@@ -164,16 +171,32 @@ public class BallMovement : MonoBehaviour
             }
             else
             {
-
+                // released after drag
                 if (wasTouchingLastFixed && mainLogic.getShots() > 0)
                 {
-                    rb.gravityScale = 1;
-                    wasTouchingLastFixed = false;
-                    rb.AddForce(-aimDir * shootStrength, ForceMode2D.Impulse);
+                    float dragDist = Vector2.Distance(Camera.main.ScreenToWorldPoint(touchB), Camera.main.ScreenToWorldPoint(touchA));
+                    dragDist = Mathf.Clamp(dragDist, dragDistMinMax.x, dragDistMinMax.y);
 
-                    mainLogic.didShot();
+                    // didn't drag far enough, reset shot
+                    if (dragDist <= dragReleaseDist)// && canRelease)
+                    {
+                        //hide drag 
+                        
+                        //isTouching = false;
+                        canRelease = false;
+                        hideDragIndicationInstant();
+                    }
+                    else
+                    {
+                        rb.gravityScale = 1;
+                        wasTouchingLastFixed = false;
+                        rb.AddForce(-aimDir * shootStrength, ForceMode2D.Impulse);
 
-                    StartCoroutine(hideDragIndication());
+                        mainLogic.didShot();
+
+                        StartCoroutine(hideDragIndication());
+                    }
+
                 }
 
                 //joystickInner.position = joystickInnerStart;
@@ -343,6 +366,15 @@ public class BallMovement : MonoBehaviour
     {
         var inner = Camera.main.ScreenToWorldPoint(touchA);
         var outter = Camera.main.ScreenToWorldPoint(touchB);
+
+        // Clamp max
+        if(Vector2.Distance(inner, outter) > dragDistMinMax.magnitude)
+        {
+            var dir = outter - inner;
+            outter = inner + dir.normalized * dragDistMinMax.magnitude;
+            //outter = inner + Vector3.ClampMagnitude(outter, dragDistMinMax.magnitude);
+        }
+
         dragInner.position = new Vector3(inner.x, inner.y, 0);
         dragOutter.position = new Vector3(outter.x, outter.y, 0);
         dragLine.SetPosition(0, dragInner.position);

@@ -6,6 +6,21 @@ using DG.Tweening;
 public class DynamicObject : MonoBehaviour
 {
     public bool canBeSucked;
+    [Space]
+    [Header("Move Object")]
+    [SerializeField] private bool doesMovePattern;
+    //[SerializeField] private Ease moveEase = Ease.Linear;
+    [SerializeField] private AnimationCurve moveEase;
+    [SerializeField] private int initialDir;
+    //[SerializeField] private float totalMoveDistance;
+    //[SerializeField] private float startTimerDistance = 0.5f;
+    [SerializeField] private float moveSpeed;
+
+    [SerializeField] private Vector3 startMovePos;
+    [SerializeField] private Vector3 endMovePos;
+
+    private float moveTimer;
+    private int moveDir;
 
     private Vector3 startPos;
     private Vector3 startOrient;
@@ -22,11 +37,34 @@ public class DynamicObject : MonoBehaviour
         startOrient = transform.eulerAngles;
         startScale = transform.localScale;
         startMass = rb.mass;
+
+        if (doesMovePattern)
+        {
+            startMovePos = startPos + startMovePos;
+            endMovePos = startPos + endMovePos;
+
+            moveTimer = getPercentageBetweenVectors(startPos, startMovePos, endMovePos); //0.5f; //startTimerDistance; 
+
+            moveDir = initialDir;
+        }
     }
 
     void Update()
     {
-        
+        if (doesMovePattern)
+        {
+            moveTimer += Time.deltaTime * moveDir * moveSpeed;
+            if (moveTimer >= 1) moveDir = -1;
+            if (moveTimer <= 0) moveDir =  1;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if(doesMovePattern)
+        {
+            transform.position = Vector2.Lerp(startMovePos, endMovePos, moveEase.Evaluate(moveTimer));
+        }
     }
 
     public float getMagnitude()
@@ -45,6 +83,12 @@ public class DynamicObject : MonoBehaviour
         transform.localScale = startScale;
         transform.position = startPos;
         transform.eulerAngles = startOrient;
+
+        if (doesMovePattern)
+        {
+            moveTimer = getPercentageBetweenVectors(startPos, startMovePos, endMovePos); 
+            moveDir = initialDir;
+        }
     }
 
 
@@ -62,5 +106,14 @@ public class DynamicObject : MonoBehaviour
         transform.DORotate(new Vector3(0,0,transform.rotation.z + objectRotSpeed * dir), 1f).SetLoops(-1);
 
         //Destroy(gameObject, shrinkDur); // need to respawn
+    }
+
+
+    private float getPercentageBetweenVectors(Vector2 vMid, Vector2 v1, Vector2 v2)
+    {
+        float totalLength = Vector2.Distance(v1, v2);
+        float midToStartLength = Vector2.Distance(vMid, v1);
+
+        return midToStartLength / totalLength;
     }
 }

@@ -65,7 +65,7 @@ public class LevelManager : MonoBehaviour
     private string loadLevel()
     {
         string lvlString = lvl.ToString();
-        if (lvl < 9) lvlString = "0" + lvlString;
+        if (lvl < 10) lvlString = "0" + lvlString;
         SceneManager.LoadScene("level" + lvlString);
         return lvlString;
     }
