@@ -184,6 +184,7 @@ GameObject:
   - component: {fileID: 5856212610299442103}
   - component: {fileID: 5856212610299442102}
   - component: {fileID: 5856212610299442100}
+  - component: {fileID: 5086195794510996300}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Player
@@ -320,6 +321,24 @@ MonoBehaviour:
   joystickOffset: 3
   trajectory: {fileID: 7575610217017913707}
   trajectoryVerts: 50
+--- !u!114 &5086195794510996300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5856212610299442089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba46945e8db7af4e931e5560510ee09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualBall: {fileID: 5856212609856621834}
+  velocityDeform: 0.5
+  collisionShakeVelMulti: 10
+  collisionShakeThreshold: 2
+  collShakeMin: 0.25
+  collShakeMax: 0.9
 --- !u!1 &7575610217017913707
 GameObject:
   m_ObjectHideFlags: 0
