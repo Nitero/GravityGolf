@@ -34,6 +34,7 @@ public class BallMovement : MonoBehaviour
     private LineRenderer dragLine;
     private Transform dragOutter;
     private Transform dragInner;
+    private SpriteRenderer dragCross;
     [SerializeField] private float joystickOffset = 3;
     private Vector2 joystickOutterStart;
     private Vector2 joystickInnerStart;
@@ -50,6 +51,7 @@ public class BallMovement : MonoBehaviour
         dragLine = dragIndication.GetComponent<LineRenderer>();
         dragOutter = dragIndication.transform.GetChild(0);
         dragInner = dragIndication.transform.GetChild(1);
+        dragCross = dragInner.transform.GetChild(0).GetComponent<SpriteRenderer>();
         dragIndication.SetActive(false);
 
         rb = GetComponent<Rigidbody2D>();
@@ -127,10 +129,22 @@ public class BallMovement : MonoBehaviour
             shootStrength = dragDist.Remap(dragDistMinMax.x, dragDistMinMax.y, shootStrMinMax.x, shootStrMinMax.y);
 
             if(dragDist >= dragDistOutBeforeCanRelease) canRelease = true;
-                
-            //trajectoryVerts
 
-            drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass));
+            // Could reset now
+            if (canRelease && dragDist <= dragReleaseDist)
+            {
+                dragCross.transform.DOScale(Vector3.one * 2, 0.25f);
+
+                hideTrajectory();
+            }
+            // Could not
+            else
+            {
+                dragCross.transform.localScale = Vector3.zero;//dragCross.transform.DOScale(Vector3.zero, 0.25f);
+                drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass));
+            }
+                
+            
 
             slowmotion.setDragging(true);
 
@@ -180,10 +194,6 @@ public class BallMovement : MonoBehaviour
                     // didn't drag far enough, reset shot
                     if (dragDist <= dragReleaseDist)// && canRelease)
                     {
-                        //hide drag 
-                        
-                        //isTouching = false;
-                        canRelease = false;
                         hideDragIndicationInstant();
                     }
                     else
@@ -197,6 +207,8 @@ public class BallMovement : MonoBehaviour
                         StartCoroutine(hideDragIndication());
                     }
 
+                    canRelease = false;
+                    //dragCross.transform.localScale = Vector3.zero;//dragCross.transform.DOScale(Vector3.zero, 0.25f);
                 }
 
                 //joystickInner.position = joystickInnerStart;
