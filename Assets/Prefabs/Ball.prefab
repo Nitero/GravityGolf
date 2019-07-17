@@ -344,7 +344,7 @@ MonoBehaviour:
   collisionShakeThreshold: 2
   collShakeMin: 0.25
   collShakeMax: 0.9
-  collisionColThreshold: 10
+  collisionColThreshold: 12
 --- !u!1 &7575610217017913707
 GameObject:
   m_ObjectHideFlags: 0

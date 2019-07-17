@@ -526,6 +526,22 @@ public class BallMovement : MonoBehaviour
     {
         inTutorial = false;
     }
+
+    public void hideSprite()
+    {
+        GetComponent<BallVisuals>().setSprite(false);
+
+    }
+
+    public void spawnFromPortal(Vector2 spawnPos)
+    {
+        transform.position = spawnPos;
+        //GetComponent<BallVisuals>().setSprite(true);
+        GetComponent<BallVisuals>().spawnAnim();
+        //rb.gravityScale = 1;
+        rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
+
+    }
 }
 
 

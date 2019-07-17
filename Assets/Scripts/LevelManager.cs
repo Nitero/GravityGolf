@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
 
 
         if (lvl == 0) uiManager.tutorialAnimation();
-        else player.notInTut();
+        else if(PlayerPrefs.GetInt("sceneSelectToggled") == 1) player.notInTut();
 
         // if go back to first scene, don't show tutorial again, but still be able to move
         if(lvl == 0 && PlayerPrefs.HasKey("sceneSelectToggled") && PlayerPrefs.GetInt("sceneSelectToggled") == 1)
@@ -55,9 +55,11 @@ public class LevelManager : MonoBehaviour
         if((PlayerPrefs.HasKey("lastLvl") && PlayerPrefs.GetInt("lastLvl") != lvl && PlayerPrefs.GetInt("sceneSelectToggled") == 0))
             //&& (!PlayerPrefs.HasKey("sceneSelectToggled") || PlayerPrefs.GetInt("sceneSelectToggled") == 0))
         {
+
+
             Vector2 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
             var portal = Instantiate(portalSpawnPrefab, playerPos + portalSpawnOffset, Quaternion.identity);
-
+            portal.GetComponent<Portal>().spawnAnim();
         }
 
 
@@ -67,7 +69,7 @@ public class LevelManager : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
 

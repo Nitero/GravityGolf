@@ -10,6 +10,8 @@ public class BallVisuals : MonoBehaviour
     private Tween shakeTween;
     private Tween blinkTween;
     private Quaternion fixedRot;
+    private bool inSpawnAnim;
+
 
     [SerializeField] private Transform visualBall;
     //[SerializeField] private float velocityDeform = 0.2f;
@@ -57,7 +59,7 @@ public class BallVisuals : MonoBehaviour
 
 
         // PAUSE THIS WHEN SCALE PLAYER BY DAMAGE (func below)
-        if (shakeTween == null || !shakeTween.IsPlaying())
+        if (!inSpawnAnim && (shakeTween == null || !shakeTween.IsPlaying()))
         {
             //var deform = rb.velocity.normalized;
             ////var locVel = transform.InverseTransformDirection(rb.velocity);
@@ -160,5 +162,25 @@ public class BallVisuals : MonoBehaviour
             //blinkTween = sprite.DOColor(Color.grey, 0.25f).SetEase(Ease.Flash, 4, 1);
             blinkTween = sprite.DOColor(Color.grey, 0.1f).SetEase(Ease.Flash, 4, 0);
         }
+    }
+
+    public void setSprite(bool b)
+    {
+        sprite.enabled = b;
+    }
+
+    public void spawnAnim()
+    {
+        inSpawnAnim = true;
+        sprite.transform.localScale = Vector2.zero;
+        setSprite(true);
+
+        var seq = DOTween.Sequence();
+        seq.Append(sprite.transform.DOScale(Vector2.one, 0.25f));
+        seq.Append(sprite.transform.DOPunchScale(Vector2.one * 0.5f, 0.1f));
+        seq.AppendCallback(() => inSpawnAnim = false);
+
+        seq.AppendCallback(() => GameObject.Find("Click Protection Total").SetActive(false));
+
     }
 }
