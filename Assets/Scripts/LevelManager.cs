@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class LevelManager : MonoBehaviour
 {
+    [SerializeField] private Vector2 portalSpawnOffset;
+    [SerializeField] private GameObject portalSpawnPrefab;
     [SerializeField] private float levelCameraTrans = 0.25f;
     [SerializeField] private int maxLvl;
     //[SerializeField] private bool debugging = true;
@@ -48,6 +50,16 @@ public class LevelManager : MonoBehaviour
 
             cam.transform.DOMoveX(0, levelCameraTrans).SetEase(Ease.OutCubic).SetUpdate(true);
         }
+
+        // progressed one level normally
+        if((PlayerPrefs.HasKey("lastLvl") && PlayerPrefs.GetInt("lastLvl") != lvl && PlayerPrefs.GetInt("sceneSelectToggled") == 0))
+            //&& (!PlayerPrefs.HasKey("sceneSelectToggled") || PlayerPrefs.GetInt("sceneSelectToggled") == 0))
+        {
+            Vector2 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+            var portal = Instantiate(portalSpawnPrefab, playerPos + portalSpawnOffset, Quaternion.identity);
+
+        }
+
 
         PlayerPrefs.SetInt("lastLvl", lvl);
     }

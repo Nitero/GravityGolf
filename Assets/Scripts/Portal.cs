@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class Goal : MonoBehaviour
+public class Portal : MonoBehaviour
 {
+
+    [SerializeField] private bool isGoal = true;
+    [SerializeField] private bool doesSuck = true;
+    [Space]
     [SerializeField] private float ballLessMagnitudeStop = 0.5f;
     [SerializeField] private float objLessMagnitudeStop = 2f; // objects are heavier...
 
@@ -34,12 +38,14 @@ public class Goal : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        if (!doesSuck) return;
+
         var ball = collision.GetComponent<BallMovement>();
         if (ball != null)
         {
             if (ball.getMagnitude() < ballLessMagnitudeStop)
             {
-                ball.didHitGoal(ballShrinkDur, ballShrinkEase);
+                ball.didHitGoal(ballShrinkDur, ballShrinkEase, isGoal);
 
                 print("GOAL");
 

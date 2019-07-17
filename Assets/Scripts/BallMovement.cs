@@ -21,7 +21,7 @@ public class BallMovement : MonoBehaviour
 
     private Vector2 originalPos;
     private bool canRelease;
-    private bool hitGoal;
+    private bool insidePortal;
     private bool inTutorial = true;
     private LineRenderer line;
 
@@ -127,7 +127,7 @@ public class BallMovement : MonoBehaviour
 
 
 
-        if (!hitGoal && isTouching && mainLogic.getShots() > 0)
+        if (!insidePortal && isTouching && mainLogic.getShots() > 0)
         {
             float dragDist = Vector2.Distance(Camera.main.ScreenToWorldPoint(touchB), Camera.main.ScreenToWorldPoint(touchA));
             dragDist = Mathf.Clamp(dragDist, dragDistMinMax.x, dragDistMinMax.y);
@@ -184,7 +184,7 @@ public class BallMovement : MonoBehaviour
         if (inTutorial) return;
         
 
-        if (!hitGoal)
+        if (!insidePortal)
         {
             // Mouse & Touch input
             if (isTouching && mainLogic.getShots() > 0)
@@ -371,10 +371,11 @@ public class BallMovement : MonoBehaviour
         return rb.velocity.magnitude;
     }
 
-    public void didHitGoal(float shrinkDur, Ease ease)
+    public void didHitGoal(float shrinkDur, Ease ease, bool isGoal)
     {
+        insidePortal = true;
+
         rb.gravityScale = 0;
-        hitGoal = true;
 
         //GetComponent<Collider2D>().enabled = false; //doesn't work bcz goal can't suck you in anymore
         gameObject.layer = LayerMask.NameToLayer("Collide With Nothing");
@@ -384,13 +385,21 @@ public class BallMovement : MonoBehaviour
         hideDragIndicationInstant();
 
         transform.DOScale(Vector3.zero, shrinkDur).SetEase(ease);
-        Invoke("nextLvl", shrinkDur);
+
+
+        if (isGoal)
+            Invoke("nextLvl", shrinkDur);
+        
+        else
+        
+            Invoke("died", shrinkDur);    
     }
 
     private void nextLvl()
     {
         FindObjectOfType<LevelManager>().nextLvl();
     }
+
 
 
     private void showDragIndication()

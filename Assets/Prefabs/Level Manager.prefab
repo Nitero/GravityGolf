@@ -43,5 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f32ee27da35224ea614ea81c3cc228, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  portalSpawnOffset: {x: 0, y: 2}
+  portalSpawnPrefab: {fileID: 1819832796650198695, guid: 271bb414f68d74f439e3e6cbbddbbe68,
+    type: 3}
   levelCameraTrans: 0.125
   maxLvl: 20
