@@ -258,6 +258,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfe664da099ea194d9ee33d0f8c9cb2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showRealTrajectory: 0
+  keptVelocityOnShot: 0.75
   shootStrMinMax: {x: 10, y: 100}
   dragDistMinMax: {x: 0, y: 5}
   dragDistOutBeforeCanRelease: 1
@@ -334,11 +336,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualBall: {fileID: 5856212609856621834}
-  velocityDeform: 0.5
+  minVel: 0
+  maxVel: 10
+  velMultiX: 0.2
+  velMultiY: 0.3
   collisionShakeVelMulti: 10
   collisionShakeThreshold: 2
   collShakeMin: 0.25
   collShakeMax: 0.9
+  collisionColThreshold: 10
 --- !u!1 &7575610217017913707
 GameObject:
   m_ObjectHideFlags: 0

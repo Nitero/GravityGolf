@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 
 public class BallMovement : MonoBehaviour
 {
+    [SerializeField] private bool showRealTrajectory;
+    [SerializeField] private float keptVelocityOnShot = 1f; // 0 means complete reset, 1 means keep old vel and add new
     [SerializeField] private Vector2 shootStrMinMax;
     [SerializeField] private Vector2 dragDistMinMax; //above doesn't do more strength, below and it can be released to abort
     [SerializeField] private float dragDistOutBeforeCanRelease = 1f; 
@@ -34,7 +36,8 @@ public class BallMovement : MonoBehaviour
     private LineRenderer dragLine;
     private Transform dragOutter;
     private Transform dragInner;
-    private SpriteRenderer dragCross;
+    //private SpriteRenderer dragCross;
+    private SpriteRenderer[] dragCrossParts = new SpriteRenderer[2];
     [SerializeField] private float joystickOffset = 3;
     private Vector2 joystickOutterStart;
     private Vector2 joystickInnerStart;
@@ -51,7 +54,9 @@ public class BallMovement : MonoBehaviour
         dragLine = dragIndication.GetComponent<LineRenderer>();
         dragOutter = dragIndication.transform.GetChild(0);
         dragInner = dragIndication.transform.GetChild(1);
-        dragCross = dragInner.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        //dragCross = dragInner.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        dragCrossParts[0] = dragInner.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        dragCrossParts[1] = dragInner.transform.GetChild(1).GetComponent<SpriteRenderer>();
         dragIndication.SetActive(false);
 
         rb = GetComponent<Rigidbody2D>();
@@ -133,15 +138,28 @@ public class BallMovement : MonoBehaviour
             // Could reset now
             if (canRelease && dragDist <= dragReleaseDist)
             {
-                dragCross.transform.DOScale(Vector3.one * 2, 0.25f);
+                //var crossSpr = dragCross.transform.GetComponent<SpriteRenderer>();
+                //crossSpr.color = Color.clear;
+                //dragCross.transform.DOScale(Vector3.one * 3, 0.2f);
+                //crossSpr.DOColor(Color.white, 0.2f);
+                foreach (SpriteRenderer s in dragCrossParts)
+                    s.transform.DOScaleX(3, 0.2f).SetEase(Ease.OutCubic);
 
                 hideTrajectory();
             }
             // Could not
             else
             {
-                dragCross.transform.localScale = Vector3.zero;//dragCross.transform.DOScale(Vector3.zero, 0.25f);
-                drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass));
+                //dragCross.transform.DOScale(Vector3.zero, 0.2f);
+                //dragCross.transform.GetComponent<SpriteRenderer>().DOColor(Color.clear, 0.2f);
+                foreach (SpriteRenderer s in dragCrossParts)
+                    s.transform.DOScaleX(0, 0.2f);
+
+                if (showRealTrajectory)
+                    drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass) + rb.velocity);
+                else
+                    drawTrajectory(transform.position, -aimDir * (shootStrength / rb.mass));
+
             }
                 
             
@@ -198,6 +216,7 @@ public class BallMovement : MonoBehaviour
                     }
                     else
                     {
+                        rb.velocity = rb.velocity * keptVelocityOnShot;
                         rb.gravityScale = 1;
                         wasTouchingLastFixed = false;
                         rb.AddForce(-aimDir * shootStrength, ForceMode2D.Impulse);

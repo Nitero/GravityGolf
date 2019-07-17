@@ -8,15 +8,24 @@ public class BallVisuals : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     private Tween shakeTween;
+    private Tween blinkTween;
     private Quaternion fixedRot;
 
     [SerializeField] private Transform visualBall;
-    [SerializeField] private float velocityDeform = 0.2f;
+    //[SerializeField] private float velocityDeform = 0.2f;
+    [SerializeField] private float minVel = 0;
+    [SerializeField] private float maxVel = 10;
+    [SerializeField] private float velMultiX = .2f;
+    [SerializeField] private float velMultiY = .3f;
+    [Space]
     [SerializeField] private float collisionShakeVelMulti = 10f;
     [SerializeField] private float collisionShakeThreshold = 2f;
-    [Space]
     [SerializeField] private float collShakeMin = 0.25f;
     [SerializeField] private float collShakeMax = 0.9f;
+    [Space]
+    //[SerializeField] private float collisionVelColBrightMulti = 10f;
+    [SerializeField] private float collisionColThreshold = 2f;
+    
 
 
     void Awake()
@@ -34,6 +43,7 @@ public class BallVisuals : MonoBehaviour
 
     void LateUpdate()
     {
+
         //fix rotation of sprite, parent with collider can still roll
         //visualBall.transform.rotation = fixedRot;
 
@@ -49,38 +59,71 @@ public class BallVisuals : MonoBehaviour
         // PAUSE THIS WHEN SCALE PLAYER BY DAMAGE (func below)
         if (shakeTween == null || !shakeTween.IsPlaying())
         {
+            //var deform = rb.velocity.normalized;
+            ////var locVel = transform.InverseTransformDirection(rb.velocity);
+            ////var deform = locVel.normalized; //(for when the object to deform rotates... here is is axis alligned)
+            //deform *= velocityDeform;
+
+            //deform.x = Mathf.Abs(deform.x);
+            //deform.y = Mathf.Abs(deform.y);
+
+            //visualBall.localScale = Vector2.one + deform;
+
+
+
+            // Y always points to velocity dir, so don't need velocity direction, just magnitude 
             /*
-            var deformMargin = rb.velocity.magnitude / maxVelocity;
-            if (deformMargin >= 1) deformMargin = 1;
-            if (deformMargin <= 0) deformMargin = 0;
-            print(deformMargin);
-            transform.localScale = new Vector2(1 - velocityDeform * deformMargin, 1 + velocityDeform * deformMargin);
+            var currSpeed = rb.velocity.magnitude;
+
+
+            float Strength = 15f;
+            float Dampening = 0.3f;
+            float VelocityStretch = 0.25f;
+            float _squash = 0;
+            float _squashVelocity = 0;
+
+            //Calculate the desired squash amount based on the current Y axis velocity.
+            //float targetSquash = -Mathf.Abs(velocity.y) * VelocityStretch;
+            float targetSquash = currSpeed * VelocityStretch;
+
+            //Adjust the squash velocity.
+            //_squashVelocity += (targetSquash - _squash) * Strength * Time.deltaTime;
+
+            //Apply dampening to the squash velocity.
+            //_squashVelocity = ((_squashVelocity / Time.deltaTime) * (1f - Dampening)) * Time.deltaTime;
+
+            //Apply the velocity to the squash value.
+            // _squash += _squashVelocity;
+
+
+            if (targetSquash <= 1)
+                targetSquash = 1;
+            visualBall.localScale = new Vector2(1, targetSquash);//_squash);
             */
 
-
-            var deform = rb.velocity.normalized;
-            //var locVel = transform.InverseTransformDirection(rb.velocity);
-            //var deform = locVel.normalized; //(for when the object to deform rotates... here is is axis alligned)
-            deform *= velocityDeform;
+            //TODO: accurate ground
 
 
-            deform.x = Mathf.Abs(deform.x);
-            deform.y = Mathf.Abs(deform.y);
+            //https://github.com/grapefrukt/juicy-breakout/blob/master/src/com/grapefrukt/games/juicy/gameobjects/Ball.as
 
-            visualBall.localScale = Vector2.one + deform;
-            //visuals.localScale = Vector2.one + new Vector2(transform.up.x * deform.x, transform.up.y * deform.y);
+            var scaleY = 1 + (rb.velocity.magnitude - minVel) / (maxVel - minVel) * velMultiY;
+            var scaleX = 1 - (rb.velocity.magnitude - minVel) / (maxVel - minVel) * velMultiX;
+
+            visualBall.localScale = new Vector2(scaleX, scaleY);
         }
 
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        return;
+
 
         if (rb.velocity.magnitude >= collisionShakeThreshold)
             shakeScale(rb.velocity.magnitude * collisionShakeVelMulti);
 
 
+        if (rb.velocity.magnitude >= collisionColThreshold)
+            blink(rb.velocity.magnitude);
     }
 
 
@@ -89,11 +132,33 @@ public class BallVisuals : MonoBehaviour
     {
         if (shakeTween == null || !shakeTween.IsPlaying())
         {
+            visualBall.localScale = Vector2.one;
+
             var scale = 1 - (vel / 50f);
             if (scale >= collShakeMax) scale = collShakeMax;
             if (scale <= collShakeMin) scale = collShakeMin;
 
             shakeTween = visualBall.DOShakeScale(1 - scale, scale); //* dmgShakeAm
+        }
+    }
+
+    private void blink(float vel)
+    {
+        if (blinkTween == null || !blinkTween.IsPlaying())
+        {
+            /*
+            var orgColor = sprite.color;
+            var brightColor = sprite.color;
+            brightColor.r += vel;
+            brightColor.g += vel;
+            brightColor.b += vel;
+
+            blinkTween = DOTween.Sequence();
+            blinkTween.Append(sprite.DOColor(brightColor, 0.1f));
+            */
+
+            //blinkTween = sprite.DOColor(Color.grey, 0.25f).SetEase(Ease.Flash, 4, 1);
+            blinkTween = sprite.DOColor(Color.grey, 0.1f).SetEase(Ease.Flash, 4, 0);
         }
     }
 }

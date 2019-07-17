@@ -63,6 +63,8 @@ public class Goal : MonoBehaviour
 
     private void suckEffect()
     {
+        transform.DOKill(); //prevent permanent deform... better would be preserve original scale and go back to it when no tweens anymore
+
         transform.DOShakeScale(0.25f, 0.75f, 10);
         //transform.DOPunchScale(new Vector2(-0.5f, -0.5f), 1f, 3);
     }
