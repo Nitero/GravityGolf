@@ -39,9 +39,12 @@ public class Portal : MonoBehaviour
     [Space]
     [SerializeField] private Transform spriteParent;
 
+    private BallVisuals ballVisuals;
+
     void Start()
     {
         StartCoroutine(startPortalAnim());
+        ballVisuals = FindObjectOfType<BallVisuals>();
     }
 
 
@@ -95,10 +98,20 @@ public class Portal : MonoBehaviour
 
         if (doesTeleport)
         {
-            suckEffectLess();
+            var vel = collision.GetComponent<BallMovement>().getMagnitude();
+            if (vel >= 1f)
+            {
+                suckEffect();
+                teleportConnection.GetComponent<Portal>().suckEffect();
+
+                ballVisuals.boundShake(collision.GetComponent<Rigidbody2D>().velocity.normalized, vel);
+            }
+
+
+
             collision.transform.position = teleportConnection.position;
+            collision.GetComponentInChildren<TrailRenderer>().Clear();
             Physics2D.IgnoreCollision(collision, teleportConnection.GetComponent<Collider2D>());
-            teleportConnection.GetComponent<Portal>().suckEffect();
             StartCoroutine(reactivateTrigger(canTPbackDelay, teleportConnection.GetComponent<Collider2D>(), collision));
         }
     }
@@ -116,11 +129,14 @@ public class Portal : MonoBehaviour
                 {
                     ball.didHitGoal(ballShrinkDur, ballShrinkEase, isGoal);
 
+
+
                     //print("GOAL");
 
                     //TODO: konfetti !?
 
-                    Invoke("suckEffect", ballShrinkDur / 2);
+
+                    Invoke("suckEffect", ballShrinkDur / 1.25f);
                 }
             }
 
@@ -158,6 +174,7 @@ public class Portal : MonoBehaviour
     {
         //GameObject.Find("Click Protection Total").SetActive(true);
         GameObject.Find("Canvas").transform.GetChild(GameObject.Find("Canvas").transform.childCount-1).gameObject.SetActive(true); //bad workaround
+        FindObjectOfType<TrailRenderer>().enabled = false;
 
         var player = GameObject.FindGameObjectWithTag("Player").GetComponent<BallMovement>();
         //player.transform.position = transform.position;
@@ -183,7 +200,7 @@ public class Portal : MonoBehaviour
         seq.Append(spriteParent.parent.DOShakeScale(.25f));
         seq.Join(spriteParent.parent.DOScale(Vector2.zero, .25f));
 
-        seq.AppendCallback(() => player.notInTut());
+        seq.AppendCallback(() => FindObjectOfType<TrailRenderer>().enabled = true);
         seq.AppendInterval(2f);
         seq.AppendCallback(() => Destroy(gameObject));
     }

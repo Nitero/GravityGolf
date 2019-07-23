@@ -19,11 +19,13 @@ public class LevelManager : MonoBehaviour
     private BallMovement player;
 
     private Camera cam;
+    private Screenshake screenShake;
 
     void Awake() //Start
     {
         cam = Camera.main;
         uiManager = FindObjectOfType<UiManager>();
+        screenShake = FindObjectOfType<Screenshake>();
         player = FindObjectOfType<BallMovement>();
 
         var sceneName = SceneManager.GetActiveScene().name;
@@ -48,14 +50,17 @@ public class LevelManager : MonoBehaviour
             if(lastLvl > lvl) cam.transform.position = new Vector3(17,0,-10);
             else cam.transform.position = new Vector3(-17, 0, -10);
 
+            screenShake.setInTransition(true);
+
+            Sequence seq = DOTween.Sequence().SetUpdate(true); 
             cam.transform.DOMoveX(0, levelCameraTrans).SetEase(Ease.OutCubic).SetUpdate(true);
+            seq.AppendCallback(() => screenShake.setInTransition(false));
         }
 
         // progressed one level normally
-        if((PlayerPrefs.HasKey("lastLvl") && PlayerPrefs.GetInt("lastLvl") != lvl && PlayerPrefs.GetInt("sceneSelectToggled") == 0))
+        if(lvl != 0 && (PlayerPrefs.HasKey("lastLvl") && PlayerPrefs.GetInt("lastLvl") != lvl && PlayerPrefs.GetInt("sceneSelectToggled") == 0))
             //&& (!PlayerPrefs.HasKey("sceneSelectToggled") || PlayerPrefs.GetInt("sceneSelectToggled") == 0))
         {
-
 
             Vector2 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
             var portal = Instantiate(portalSpawnPrefab, playerPos + portalSpawnOffset, Quaternion.identity);
@@ -89,6 +94,7 @@ public class LevelManager : MonoBehaviour
         lvl++;
         if (lvl > maxLvl) lvl = maxLvl;
 
+        screenShake.setInTransition(true);
 
         Sequence seq = DOTween.Sequence().SetUpdate(true); //move camera even in timescale 0
         seq.Append(cam.transform.DOMoveX(17, levelCameraTrans).SetEase(Ease.InCubic));
@@ -102,6 +108,7 @@ public class LevelManager : MonoBehaviour
         lvl--;
         if (lvl < 0) lvl = 0;
 
+        screenShake.setInTransition(true);
 
         Sequence seq = DOTween.Sequence().SetUpdate(true); //move camera even in timescale 0
         seq.Append(cam.transform.DOMoveX(-17, levelCameraTrans).SetEase(Ease.InCubic));

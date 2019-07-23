@@ -47,6 +47,7 @@ public class BallMovement : MonoBehaviour
 
     private GameLoop mainLogic;
     private Slowmotion slowmotion;
+    private BallVisuals visuals;
 
     void Start()
     {
@@ -60,12 +61,18 @@ public class BallMovement : MonoBehaviour
         dragIndication.SetActive(false);
 
         rb = GetComponent<Rigidbody2D>();
+        //visuals = GetComponent<BallVisuals>();
         line = trajectory.GetComponent<LineRenderer>();
         slowmotion = FindObjectOfType<Slowmotion>();
         mainLogic = FindObjectOfType<GameLoop>();
 
         //rb.gravityScale = 0;
         originalPos = transform.position;
+    }
+
+    private void Awake()
+    {
+        visuals = GetComponent<BallVisuals>();
     }
 
 
@@ -223,6 +230,11 @@ public class BallMovement : MonoBehaviour
 
                         mainLogic.didShot();
 
+                        visuals.dust((Vector2)transform.position /* + aimDir*/);
+
+                        //if(shootStrength == shootStrMinMax.y)
+                        //    FindObjectOfType<HitStop>().Stop(0.025f);
+
                         StartCoroutine(hideDragIndication());
                     }
 
@@ -245,6 +257,7 @@ public class BallMovement : MonoBehaviour
 
     public void drawTrajectory(Vector2 startPos, Vector2 startVelocity)  //https://answers.unity.com/questions/606720/drawing-projectile-trajectory.html?childToView=606837#comment-606837
     {
+
         var distance = 0f;
 
         var verts = trajectoryVerts;
@@ -363,7 +376,7 @@ public class BallMovement : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag == "KillBounds")
-            died();
+            diedBounds();
     }
 
     public float getMagnitude()
@@ -380,19 +393,41 @@ public class BallMovement : MonoBehaviour
         //GetComponent<Collider2D>().enabled = false; //doesn't work bcz goal can't suck you in anymore
         gameObject.layer = LayerMask.NameToLayer("Collide With Nothing");
 
+
+
         slowmotion.hitGoal(true);
 
         hideDragIndicationInstant();
 
         transform.DOScale(Vector3.zero, shrinkDur).SetEase(ease);
 
+        //FindObjectOfType<TrailRenderer>().enabled = false;
+        GetComponentInChildren<TrailRenderer>().DOResize(0, 0, shrinkDur);
 
         if (isGoal)
+        {
+            Invoke("trappedInPortalGoalShake", 1.75f);
             Invoke("nextLvl", shrinkDur);
-        
+        }
         else
-        
-            Invoke("died", shrinkDur);    
+        {
+            Invoke("trappedInPortalBadShake", 1.75f);
+            Invoke("died", shrinkDur);
+        }
+    }
+
+    private void trappedInPortalBadShake()
+    {
+        visuals.shake(Random.insideUnitCircle, 0.5f);
+    }
+    private void trappedInPortalGoalShake()
+    {
+        visuals.shake(Random.insideUnitCircle, 0.4f);
+    }
+
+    public bool isInsidePortal()
+    {
+        return insidePortal;
     }
 
     private void nextLvl()
@@ -479,7 +514,17 @@ public class BallMovement : MonoBehaviour
 
         Destroy(dragIndication);
         mainLogic.resetLevel();
-        mainLogic.respawnPlayer();
+        mainLogic.respawnPlayer(false, true);
+    }
+
+    private void diedBounds()
+    {
+        //effect on the edge of camera where died
+        //screenshake
+
+        Destroy(dragIndication);
+        mainLogic.resetLevel();
+        mainLogic.respawnPlayer(true, false);
     }
 
     public void restarted()
@@ -488,7 +533,7 @@ public class BallMovement : MonoBehaviour
 
         Destroy(dragIndication);
         mainLogic.resetLevel();
-        mainLogic.respawnPlayer();
+        mainLogic.respawnPlayer(false, false);
     }
 
 
@@ -529,15 +574,15 @@ public class BallMovement : MonoBehaviour
 
     public void hideSprite()
     {
-        GetComponent<BallVisuals>().setSprite(false);
-
+        visuals.setSprite(false);
     }
+
 
     public void spawnFromPortal(Vector2 spawnPos)
     {
         transform.position = spawnPos;
         //GetComponent<BallVisuals>().setSprite(true);
-        GetComponent<BallVisuals>().spawnAnim();
+        visuals.spawnAnim();
         //rb.gravityScale = 1;
         rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
 

@@ -11,8 +11,13 @@ public class BallVisuals : MonoBehaviour
     private Tween blinkTween;
     private Quaternion fixedRot;
     private bool inSpawnAnim;
+    private TrailRenderer trail;
+    private HitStop hitStop;
+    private Screenshake screenshake;
+    private BallMovement movement;
 
 
+    [SerializeField] private GameObject dustPartic;
     [SerializeField] private Transform visualBall;
     //[SerializeField] private float velocityDeform = 0.2f;
     [SerializeField] private float minVel = 0;
@@ -20,13 +25,15 @@ public class BallVisuals : MonoBehaviour
     [SerializeField] private float velMultiX = .2f;
     [SerializeField] private float velMultiY = .3f;
     [Space]
-    [SerializeField] private float collisionShakeVelMulti = 10f;
-    [SerializeField] private float collisionShakeThreshold = 2f;
+    [SerializeField] private float dustThreshHold = 0.25f;
+    [SerializeField] private float collisionShakeVelMulti = 0.01f;
+    [SerializeField] private float collisionScaleVelMulti = 10f;
+    [SerializeField] private float collisionScaleThreshold = 2f;
     [SerializeField] private float collShakeMin = 0.25f;
     [SerializeField] private float collShakeMax = 0.9f;
     [Space]
     //[SerializeField] private float collisionVelColBrightMulti = 10f;
-    [SerializeField] private float collisionColThreshold = 2f;
+    [SerializeField] private float collisionBlinkHitstopThreshold = 2f;
     
 
 
@@ -35,8 +42,14 @@ public class BallVisuals : MonoBehaviour
         fixedRot = transform.rotation;
 
         rb = GetComponent<Rigidbody2D>();
+        movement = GetComponent<BallMovement>();
         sprite = visualBall.GetComponent<SpriteRenderer>();
+        trail = GetComponentInChildren<TrailRenderer>();
+        hitStop = FindObjectOfType<HitStop>();
+        screenshake = FindObjectOfType<Screenshake>();
     }
+
+
 
     void Update()
     {
@@ -112,22 +125,53 @@ public class BallVisuals : MonoBehaviour
             var scaleX = 1 - (rb.velocity.magnitude - minVel) / (maxVel - minVel) * velMultiX;
 
             visualBall.localScale = new Vector2(scaleX, scaleY);
+
+            if(!movement.isInsidePortal())
+                trail.startWidth = scaleX;
         }
 
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if(rb.velocity.magnitude >= dustThreshHold)
+            dust(collision.transform.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position));
 
 
-        if (rb.velocity.magnitude >= collisionShakeThreshold)
-            shakeScale(rb.velocity.magnitude * collisionShakeVelMulti);
+        if (rb.velocity.magnitude >= collisionScaleThreshold)
+            shakeScale(rb.velocity.magnitude);
 
 
-        if (rb.velocity.magnitude >= collisionColThreshold)
+        if (rb.velocity.magnitude >= collisionBlinkHitstopThreshold)
+        {
+            hitStop.Stop(0.05f); // 0.5 too much, 0.1 nothing?
             blink(rb.velocity.magnitude);
+        }
+
+        shake(rb.velocity.normalized, rb.velocity.magnitude * collisionShakeVelMulti);
     }
 
+    public void shake(Vector2 dir, float am)
+    {
+        screenshake.AddShake(dir, am);
+    }
+
+    public void boundShake(Vector2 dir, float ballVel)
+    {
+        screenshake.AddShake(dir, ballVel * collisionShakeVelMulti);
+    }
+
+
+    public void dust(Vector3 hitPoint)
+    {
+        var dirPointToPlayer = hitPoint - transform.position;
+        var part = Instantiate(dustPartic, hitPoint, dustPartic.transform.rotation); // Quaternion.Euler(-90 + dirPointToPlayer.z, -90,0));//Quaternion.Euler(transform.rotation.eulerAngles.z - 90, -90, 0));//dustPartic.transform.rotation);
+
+        float angle = Mathf.Atan2(dirPointToPlayer.y, dirPointToPlayer.x) * Mathf.Rad2Deg;
+        Quaternion q = Quaternion.AngleAxis(angle + 90, Vector3.forward);
+        part.transform.rotation = q;
+        //part.transform.eulerAngles = new Vector3(part.transform.rotation.x, -90,0);
+    }
 
 
     public void shakeScale(float vel)
@@ -140,7 +184,9 @@ public class BallVisuals : MonoBehaviour
             if (scale >= collShakeMax) scale = collShakeMax;
             if (scale <= collShakeMin) scale = collShakeMin;
 
-            shakeTween = visualBall.DOShakeScale(1 - scale, scale); //* dmgShakeAm
+            //shakeTween = visualBall.DOShakeScale(0.2f, scale); //* dmgShakeAm
+            shakeTween = visualBall.DOPunchScale(Vector2.one * vel * collisionScaleVelMulti, 0.1f); //* dmgShakeAm
+            //visualBall.DOShakeScale(0.2f, 0.1f); //* dmgShakeAm
         }
     }
 
@@ -178,8 +224,11 @@ public class BallVisuals : MonoBehaviour
         var seq = DOTween.Sequence();
         seq.Append(sprite.transform.DOScale(Vector2.one, 0.25f));
         seq.Append(sprite.transform.DOPunchScale(Vector2.one * 0.5f, 0.1f));
-        seq.AppendCallback(() => inSpawnAnim = false);
 
+        //seq.AppendInterval(0.25f); //so that no false inpit
+
+        seq.AppendCallback(() => GetComponent<BallMovement>().notInTut());
+        seq.AppendCallback(() => inSpawnAnim = false);
         seq.AppendCallback(() => GameObject.Find("Click Protection Total").SetActive(false));
 
     }

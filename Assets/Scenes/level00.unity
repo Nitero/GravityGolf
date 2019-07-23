@@ -876,6 +876,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6341251590597248232, guid: e8bc01bc4552a4d44bae0ea7e6757591,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5097493639419706988, guid: e8bc01bc4552a4d44bae0ea7e6757591,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1016,11 +1021,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    - target: {fileID: 6341251590597248232, guid: e8bc01bc4552a4d44bae0ea7e6757591,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e8bc01bc4552a4d44bae0ea7e6757591, type: 3}
 --- !u!114 &5097493639065814875 stripped
@@ -1125,6 +1125,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4179218557640333343, guid: 4c6b88f3100885843ab31c4a465d013f,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3051451627429626254, guid: 4c6b88f3100885843ab31c4a465d013f,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c6b88f3100885843ab31c4a465d013f, type: 3}

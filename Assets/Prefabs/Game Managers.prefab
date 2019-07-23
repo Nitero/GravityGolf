@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1834010218}
   - component: {fileID: 260343801526604637}
   - component: {fileID: 483716548}
+  - component: {fileID: 9165525084944322534}
+  - component: {fileID: 3043416364753256080}
   m_Layer: 0
   m_Name: Game Managers
   m_TagString: Untagged
@@ -128,6 +130,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3d8cfc198495214daf6b5e8344aaa84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  respawnDust: {fileID: 5808936928397123260, guid: a1a5c7b8beaebbe449c34e656f87f7d8,
+    type: 3}
+  deadDust: {fileID: 2998393325046864229, guid: 8186b43ff67837c4b985214ceea5dffe,
+    type: 3}
   playerPrefab: {fileID: 5856212610299442089, guid: 4c6b88f3100885843ab31c4a465d013f,
     type: 3}
   maxShots: 3
+--- !u!114 &9165525084944322534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9215554901373117933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3b5b9935ce2e94bb90d293aa3cf1ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3043416364753256080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9215554901373117933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9429b1cc31b2ccd4e8804ae294154acd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
