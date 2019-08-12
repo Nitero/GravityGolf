@@ -161,3 +161,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9429b1cc31b2ccd4e8804ae294154acd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxoffset: 1
+  traumaFallOff: 0.03333
+  powerOfAllShakes: 2
