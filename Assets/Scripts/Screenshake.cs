@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Screenshake : MonoBehaviour
+public class Screenshake : MonoBehaviour  // Old script, formerly translated from Pico-8 lua code
 {
     private Camera cam;
 
@@ -19,23 +19,24 @@ public class Screenshake : MonoBehaviour
     private GameObject player;
     private bool inTransition;
 
-    // TODO: Add duration, fade in and out, frequency, maybe rotate cam OR JUST GET THE *FREE* ASSET  https://www.youtube.com/watch?v=9A9yj8KnM8c&ab_channel=Brackeys
+    // TODO: Add duration, fade in and out, frequency, maybe rotate cam OR JUST GET THE FREE ASSET  https://www.youtube.com/watch?v=9A9yj8KnM8c&ab_channel=Brackeys
     // https://www.youtube.com/watch?v=tu-Qe66AvtY&t=636s&ab_channel=GDC
     // https://www.reddit.com/r/gamedesign/comments/6o090l/tried_to_focus_on_game_feel_in_this_game_i_didnt/
     // DIFFERENCE BETWEEN GAME FEEL AND JUICE https://www.youtube.com/watch?v=S-EmAitPYg8&ab_channel=GustavDahl
+
 
     private void Start()
     {
         cam = Camera.main;
 
-        origPos = new Vector3(0,0,-10);//cam.transform.position; //Doesnt work with transition...?
+        origPos = new Vector3(0,0,-10);
         player = GameObject.FindGameObjectWithTag("Player");
 
         //Little shake on spawn
         //AddShake(Vector2.up, 0.3f);
     }
 
-    public void AddShake(Vector2 dir, float strength) //dir only 1,0  0,-1  1,1  etc
+    public void AddShake(Vector2 dir, float strength) //dir is only 1,0  0,-1  1,1 etc
     {
         // Makes sure always 1 or 0 (?)
         if (dir.x < 0) dir.x = -dir.x;
@@ -73,20 +74,6 @@ public class Screenshake : MonoBehaviour
     {
         inTransition = b;
     }
-
-    // Do screen shake based on camera plane (no z, like hitting a wall)
-    /*public void LevelCompleted()
-    {
-        var dir = cam.transform.right + cam.transform.up;
-        dir *= Random.Range(-1f, 1f);
-        dir.Normalize();
-
-        var am = player.GetComponent<BallMovement>().GetVelocity(); // based on player speed
-        if (am > 20) am = 20;
-        am = am.Remap(0, 20, 0.1f, 1f);
-
-        AddShake(dir, am);
-    }*/
 }
 
 

@@ -5,17 +5,13 @@ using DG.Tweening;
 
 public class DynamicObject : MonoBehaviour
 {
-    public bool canBeSucked;
+    public bool canBeSucked; //Into portal
     [Space]
     [Header("Move Object")]
     [SerializeField] private bool doesMovePattern;
-    //[SerializeField] private Ease moveEase = Ease.Linear;
     [SerializeField] private AnimationCurve moveEase;
     [SerializeField] private int initialDir;
-    //[SerializeField] private float totalMoveDistance;
-    //[SerializeField] private float startTimerDistance = 0.5f;
     [SerializeField] private float moveSpeed;
-
     [SerializeField] private Vector3 startMovePos;
     [SerializeField] private Vector3 endMovePos;
 
@@ -29,15 +25,18 @@ public class DynamicObject : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    void Awake() //Start
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // Save state for restart
 
         startPos = transform.position;
         startOrient = transform.eulerAngles;
         startScale = transform.localScale;
         startMass = rb.mass;
 
+        // Calc pattern
         if (doesMovePattern)
         {
             startMovePos = startPos + startMovePos;
@@ -72,7 +71,7 @@ public class DynamicObject : MonoBehaviour
         return rb.velocity.magnitude;
     }
 
-    public void reset()
+    public void reset() // On restart
     {
         transform.DOKill();
         rb.velocity = Vector2.zero;
@@ -95,17 +94,15 @@ public class DynamicObject : MonoBehaviour
     public void hitGoal(float shrinkDur, Ease ease, int objectRotSpeed)
     {
         rb.gravityScale = 0;
-        rb.mass = 5; //for save suck
+        rb.mass = 5; // easier sucked into portal
 
-        //GetComponent<Collider2D>().enabled = false; //doesn't work bcz goal can't suck you in anymore
+        // Switch layer so you doesn't kick out player
         gameObject.layer = LayerMask.NameToLayer("Collide With Nothing");
 
-
+        // Anim
         transform.DOScale(Vector3.zero, shrinkDur).SetEase(ease);
         var dir = Random.Range(0, 2) > 0 ? 1 : -1;
         transform.DORotate(new Vector3(0,0,transform.rotation.z + objectRotSpeed * dir), 1f).SetLoops(-1);
-
-        //Destroy(gameObject, shrinkDur); // need to respawn
     }
 
 

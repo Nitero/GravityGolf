@@ -15,13 +15,13 @@ public class LevelManager : MonoBehaviour
 
     private bool inLevelTransition;
 
+    private Camera cam;
     private UiManager uiManager;
     private BallMovement player;
-
-    private Camera cam;
     private Screenshake screenShake;
 
-    void Awake() //Start
+
+    void Awake()
     {
         cam = Camera.main;
         uiManager = FindObjectOfType<UiManager>();
@@ -35,14 +35,15 @@ public class LevelManager : MonoBehaviour
         uiManager.updateLevelDisplay(lvlString, maxLvl);
 
 
-        if (lvl == 0) uiManager.tutorialAnimation();
+        if (lvl == 0) uiManager.playtutorialAnimation();
         else if(PlayerPrefs.GetInt("sceneSelectToggled") == 1) player.notInTut();
 
-        // if go back to first scene, don't show tutorial again, but still be able to move
+
+        // If go back to first scene, don't show tutorial again, but still be able to move
         if(lvl == 0 && PlayerPrefs.HasKey("sceneSelectToggled") && PlayerPrefs.GetInt("sceneSelectToggled") == 1)
             player.notInTut();
 
-
+        // Do a camera animation if changed level from last load
         if (lvl != 0 && lvl != maxLvl)
         {
             var lastLvl = PlayerPrefs.GetInt("lastLvl");
@@ -57,34 +58,26 @@ public class LevelManager : MonoBehaviour
             seq.AppendCallback(() => screenShake.setInTransition(false));
         }
 
-        // progressed one level normally
+        // Progressed one level normally
         if(lvl != 0 && (PlayerPrefs.HasKey("lastLvl") && PlayerPrefs.GetInt("lastLvl") != lvl && PlayerPrefs.GetInt("sceneSelectToggled") == 0))
-            //&& (!PlayerPrefs.HasKey("sceneSelectToggled") || PlayerPrefs.GetInt("sceneSelectToggled") == 0))
         {
-
             Vector2 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
             var portal = Instantiate(portalSpawnPrefab, playerPos + portalSpawnOffset, Quaternion.identity);
             portal.GetComponent<Portal>().spawnAnim();
         }
 
-
         PlayerPrefs.SetInt("lastLvl", lvl);
     }
 
 
-    void Update()
-    {
 
-    }
 
+
+    // ------------------ Called from UI buttons ------------------ //
 
     public void restart()
     {
         player.restarted();
-
-        /*string lvlString = lvl.ToString();
-        if (lvl < 9) lvlString = "0" + lvlString;
-        SceneManager.LoadScene("level" + lvlString);*/
     }
 
     public void nextLvl()
@@ -122,7 +115,6 @@ public class LevelManager : MonoBehaviour
         string lvlString = lvl.ToString();
         if (lvl < 10) lvlString = "0" + lvlString;
         SceneManager.LoadScene("level" + lvlString);
-        //return lvlString;
     }
 
 }

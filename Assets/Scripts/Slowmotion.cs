@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Slowmotion : MonoBehaviour
 {
+    /*
     [SerializeField] private float minTimeDragging = 0.2f;
     [SerializeField] private float slowSpeed = 0.01f;
     [SerializeField] private AnimationCurve interpolateIn;
     [SerializeField] private AnimationCurve interpolateOut;
     private AnimationCurve interpolateCurrent;
 
-    //private PlayerMovement player;
+
     private float timer; //If 1 then full slow, if 0 then no slow
     private int timerDir = -1;
     private bool enteredGoal = true;
@@ -19,14 +20,12 @@ public class Slowmotion : MonoBehaviour
 
     void Start()
     {
-        //player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+       
     }
 
 
-    void Update()
+     void Update()
     {
-        return;
-
         if (dragging && enteredGoal)
         {
             timerDir = 1;
@@ -54,7 +53,7 @@ public class Slowmotion : MonoBehaviour
     public void hitGoal(bool b)
     {
         enteredGoal = b;
-    }
+    }*/
 
 
     public void toggleSceneSelectPause(int t)

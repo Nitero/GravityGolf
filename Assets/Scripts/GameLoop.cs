@@ -10,8 +10,6 @@ public class GameLoop : MonoBehaviour
     [SerializeField] private int maxShots;
 
     private int remainingShots;
-    private float timer;
-    private bool timerStarted;
 
     private UiManager ui;
     private BallVisuals ballVis;
@@ -28,19 +26,7 @@ public class GameLoop : MonoBehaviour
         resetLevel();
     }
 
-    void Update()
-    {
-        if (timerStarted)
-        {
-            timer += Time.deltaTime;
-            //uiManager.timeDisplay.text = timer;
-        }
-    }
 
-    public void startTimer()
-    {
-        timerStarted = true;
-    }
 
     public void didShot()
     {
@@ -68,16 +54,17 @@ public class GameLoop : MonoBehaviour
     }
 
 
+
     public void respawnPlayer(bool diedOnBounds, bool diedInHole)
     {
-        if(!diedInHole)
+        if (!diedInHole)
         {
             if (!diedOnBounds)
             {
                 Instantiate(respawnDust, player.transform.position, respawnDust.transform.rotation);
                 screenshake.AddShake(Vector2.up, 0.5f);
             }
-            else
+            else // Screenshake in appropriate dir
             {
                 Vector3 pos = Camera.main.WorldToViewportPoint(player.transform.position);
                 var rot = 0;
@@ -107,9 +94,13 @@ public class GameLoop : MonoBehaviour
                 Instantiate(deadDust, Camera.main.ViewportToWorldPoint(pos), Quaternion.Euler(0, 0, rot));
             }
         }
-        else
+        else // Vertical Screenshake
+        {
             screenshake.AddShake(Vector2.up, 0.5f);
+        }
 
+
+        // Actually respawn player
 
         var dragInds = FindObjectsOfType<LineRenderer>();
         foreach (LineRenderer d in dragInds)

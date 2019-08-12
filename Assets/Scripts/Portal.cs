@@ -47,29 +47,20 @@ public class Portal : MonoBehaviour
         ballVisuals = FindObjectOfType<BallVisuals>();
     }
 
-
-    void Update()
-    {
-        
-    }
-
-
+    // Start spinning & scaling portal
     private IEnumerator startPortalAnim()
     {
-        //portal.transform.DORotate(new Vector3(0,0,transform.rotation.z + 1), portalRotateSpeed).SetLoops(-1);
         for (int i = 0; i < spriteParent.childCount; i++)
         {
-            //portal.transform.DOShakeScale(portalScaleDur, portalScaleStr, portalScaleVib, portalScaleRand); //SetLoops(-1)
-            //portal.transform.DOPunchScale(punchVec, portalScaleDur, portalScaleVib, portalScaleElast).SetLoops(-1);
             Sequence seq = DOTween.Sequence().SetLoops(-1);
             seq.Append(spriteParent.GetChild(i).transform.DOScale(spriteParent.GetChild(i).transform.localScale * scaleDivider, portalScaleShrinkDur).SetEase(Ease.InOutSine));
             seq.Append(spriteParent.GetChild(i).transform.DOScale(spriteParent.GetChild(i).transform.localScale, portalScaleExpandDur).SetEase(Ease.Linear));
 
             yield return new WaitForSeconds(scaleOffset);
         }
-
-        //visualParent.GetChild(2).transform.domovearound(visualParent.GetChild(i).transform.localScale * scaleDivider, portalScaleShrinkDur).SetEase(Ease.InOutSine));
     }
+
+
 
     private void LateUpdate()
     {
@@ -84,7 +75,7 @@ public class Portal : MonoBehaviour
 
 
 
-
+    // Don't instantly go back through teleportation portal
     private IEnumerator reactivateTrigger(float delay, Collider2D portal, Collider2D other)
     {
         yield return new WaitForSeconds(delay);
@@ -92,6 +83,8 @@ public class Portal : MonoBehaviour
             Physics2D.IgnoreCollision(other, portal, false);
     }
 
+
+    // Teleport portal is instant
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!doesSuck) return;
@@ -107,8 +100,6 @@ public class Portal : MonoBehaviour
                 ballVisuals.boundShake(collision.GetComponent<Rigidbody2D>().velocity.normalized, vel);
             }
 
-
-
             collision.transform.position = teleportConnection.position;
             collision.GetComponentInChildren<TrailRenderer>().Clear();
             Physics2D.IgnoreCollision(collision, teleportConnection.GetComponent<Collider2D>());
@@ -116,6 +107,7 @@ public class Portal : MonoBehaviour
         }
     }
 
+    // Non teleport portals wait for thing to lose speed
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (!doesSuck) return;
@@ -127,14 +119,9 @@ public class Portal : MonoBehaviour
             {
                 if (ball.getMagnitude() < ballLessMagnitudeStop)
                 {
+                    // Player safely inside goal, can't jump out anymore
+
                     ball.didHitGoal(ballShrinkDur, ballShrinkEase, isGoal);
-
-
-
-                    //print("GOAL");
-
-                    //TODO: konfetti !?
-
 
                     Invoke("suckEffect", ballShrinkDur / 1.25f);
                 }
@@ -145,6 +132,8 @@ public class Portal : MonoBehaviour
             {
                 if (obj.canBeSucked && obj.getMagnitude() < objLessMagnitudeStop)
                 {
+                    // Object safely inside goal, can't jump out anymore
+
                     obj.hitGoal(objShrinkDur, objShrinkEase, objRotSpeed);
 
                     Invoke("suckEffect", objShrinkDur / 2);
@@ -153,47 +142,39 @@ public class Portal : MonoBehaviour
         }    
     }
 
-    private void suckEffectLess() //TODO: more dynamic depending on speed
-    {
-        spriteParent.parent.DOKill(); //prevent permanent deform... better would be preserve original scale and go back to it when no tweens anymore
 
-        spriteParent.parent.DOShakeScale(0.25f, 0.5f, 10);
-        //visualParent.DOPunchScale(new Vector2(-0.5f, -0.5f), 1f, 3);
-    }
-
+    // Swallowed object/ player
     private void suckEffect()
     {
-        spriteParent.parent.DOKill(); //prevent permanent deform... better would be preserve original scale and go back to it when no tweens anymore
+        spriteParent.parent.DOKill(); //prevent permanent deform
 
         spriteParent.parent.DOShakeScale(0.25f, 0.75f, 10);
         //visualParent.DOPunchScale(new Vector2(-0.5f, -0.5f), 1f, 3);
     }
 
+    // Swallow by teleport portal, less strong for less annoying
+    private void suckEffectLess()
+    {
+        spriteParent.parent.DOKill(); //prevent permanent deform
 
+        spriteParent.parent.DOShakeScale(0.25f, 0.5f, 10);
+
+        //TODO: more dynamic depending on speed
+    }
+
+
+    // Spit out player
     public void spawnAnim()
     {
-        //GameObject.Find("Click Protection Total").SetActive(true);
         GameObject.Find("Canvas").transform.GetChild(GameObject.Find("Canvas").transform.childCount-1).gameObject.SetActive(true); //bad workaround
         FindObjectOfType<TrailRenderer>().enabled = false;
 
         var player = GameObject.FindGameObjectWithTag("Player").GetComponent<BallMovement>();
-        //player.transform.position = transform.position;
         player.hideSprite();
 
-        /*
         var seq = DOTween.Sequence();
         seq.AppendInterval(0.5f);
-        seq.Append(visualParent.DOScale(Vector2.one * 3, .5f));
-        seq.Append(visualParent.DOShakeScale(.25f)); //shake?
-        seq.Append(visualParent.DOScale(Vector2.one * 1.5f, .5f));
-        seq.AppendInterval(0.5f);
-        seq.Append(visualParent.DOScale(Vector2.zero, .25f));
-        seq.Append(visualParent.DOPunchScale(-Vector2.one * 1f, .25f));
-        */
-
-        var seq = DOTween.Sequence();
-        seq.AppendInterval(0.5f);
-        seq.Append(spriteParent.parent.DOPunchScale(Vector2.one * 0.5f, .5f)); //shake?
+        seq.Append(spriteParent.parent.DOPunchScale(Vector2.one * 0.5f, .5f)); //+ screen shake?
         seq.InsertCallback(0.6f, () => player.spawnFromPortal(transform.position));
         //seq.Join(visualParent.DOScale(Vector2.one * 1.5f, .5f));
         seq.AppendInterval(0.5f);
