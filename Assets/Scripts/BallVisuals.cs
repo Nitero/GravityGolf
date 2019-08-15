@@ -42,11 +42,11 @@ public class BallVisuals : MonoBehaviour
         fixedRot = transform.rotation;
 
         rb = GetComponent<Rigidbody2D>();
-        movement = GetComponent<BallMovement>();
-        sprite = visualBall.GetComponent<SpriteRenderer>();
-        trail = GetComponentInChildren<TrailRenderer>();
         hitStop = FindObjectOfType<HitStop>();
+        movement = GetComponent<BallMovement>();
         screenshake = FindObjectOfType<Screenshake>();
+        trail = GetComponentInChildren<TrailRenderer>();
+        sprite = visualBall.GetComponent<SpriteRenderer>();
     }
 
 
@@ -74,25 +74,29 @@ public class BallVisuals : MonoBehaviour
             if(!movement.isInsidePortal())
                 trail.startWidth = scaleX;
 
-            //TODO: accurate ground hit shake
+            //TODO: more accurate ground hit shake
         }
 
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(rb.velocity.magnitude >= dustThreshHold)
-            deathDustFX(collision.transform.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position));
-
+        // Hit wall shake ball
         if (rb.velocity.magnitude >= collisionScaleThreshold)
             shakeScale(rb.velocity.magnitude);
 
+        // Hit wall dust partic
+        if (rb.velocity.magnitude >= dustThreshHold)
+            deathDustFX(collision.transform.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position));
+
+        // Hit wall hard, blink and stop
         if (rb.velocity.magnitude >= collisionBlinkHitstopThreshold)
         {
             hitStop.Stop(0.05f); // 0.5 too much, 0.1 nothing?
             blink(rb.velocity.magnitude);
         }
 
+        // Shake screen
         shake(rb.velocity.normalized, rb.velocity.magnitude * collisionShakeVelMulti);
     }
 
@@ -117,6 +121,7 @@ public class BallVisuals : MonoBehaviour
         Quaternion q = Quaternion.AngleAxis(angle + 90, Vector3.forward);
         part.transform.rotation = q;
     }
+
 
 
     // Uppon hitting wall
@@ -144,10 +149,6 @@ public class BallVisuals : MonoBehaviour
         }
     }
 
-    public void setSpriteEnabled(bool b)
-    {
-        sprite.enabled = b;
-    }
 
     // Coming out of portal
     public void spawnAnim()
@@ -164,5 +165,11 @@ public class BallVisuals : MonoBehaviour
         seq.AppendCallback(() => inSpawnAnim = false);
         seq.AppendCallback(() => GameObject.Find("Click Protection Total").SetActive(false));
 
+    }
+
+
+    public void setSpriteEnabled(bool b)
+    {
+        sprite.enabled = b;
     }
 }

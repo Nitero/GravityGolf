@@ -24,10 +24,12 @@ public class LevelManager : MonoBehaviour
     void Awake()
     {
         cam = Camera.main;
+        player = FindObjectOfType<BallMovement>();
         uiManager = FindObjectOfType<UiManager>();
         screenShake = FindObjectOfType<Screenshake>();
-        player = FindObjectOfType<BallMovement>();
 
+
+        // Get curr lvl
         var sceneName = SceneManager.GetActiveScene().name;
         var lvlString = sceneName.Substring(sceneName.Length - 2);
         lvl = int.Parse(lvlString);
@@ -42,6 +44,7 @@ public class LevelManager : MonoBehaviour
         // If go back to first scene, don't show tutorial again, but still be able to move
         if(lvl == 0 && PlayerPrefs.HasKey("sceneSelectToggled") && PlayerPrefs.GetInt("sceneSelectToggled") == 1)
             player.notInTut();
+
 
         // Do a camera animation if changed level from last load
         if (lvl != 0 && lvl != maxLvl)
@@ -108,6 +111,7 @@ public class LevelManager : MonoBehaviour
         seq.AppendCallback(() => loadLevel());
     }
 
+    // Actually do level switch
     private void loadLevel()
     {
         inLevelTransition = true;

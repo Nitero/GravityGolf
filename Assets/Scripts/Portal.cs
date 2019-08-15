@@ -47,7 +47,7 @@ public class Portal : MonoBehaviour
         ballVisuals = FindObjectOfType<BallVisuals>();
     }
 
-    // Start spinning & scaling portal
+    // Start scaling portal
     private IEnumerator startPortalAnim()
     {
         for (int i = 0; i < spriteParent.childCount; i++)
@@ -61,7 +61,7 @@ public class Portal : MonoBehaviour
     }
 
 
-
+    // Start spinning portal
     private void LateUpdate()
     {
         for (int i = 0; i < spriteParent.childCount; i++)
@@ -134,7 +134,7 @@ public class Portal : MonoBehaviour
                 {
                     // Object safely inside goal, can't jump out anymore
 
-                    obj.hitGoal(objShrinkDur, objShrinkEase, objRotSpeed);
+                    obj.hitPortal(objShrinkDur, objShrinkEase, objRotSpeed);
 
                     Invoke("suckEffect", objShrinkDur / 2);
                 }

@@ -48,6 +48,7 @@ public class DynamicObject : MonoBehaviour
         }
     }
 
+
     void Update()
     {
         if (doesMovePattern)
@@ -65,6 +66,7 @@ public class DynamicObject : MonoBehaviour
             transform.position = Vector2.Lerp(startMovePos, endMovePos, moveEase.Evaluate(moveTimer));
         }
     }
+
 
     public float getMagnitude()
     {
@@ -91,10 +93,11 @@ public class DynamicObject : MonoBehaviour
     }
 
 
-    public void hitGoal(float shrinkDur, Ease ease, int objectRotSpeed)
+    // Safely sucked into portal
+    public void hitPortal(float shrinkDur, Ease ease, int objectRotSpeed)
     {
         rb.gravityScale = 0;
-        rb.mass = 5; // easier sucked into portal
+        rb.mass = 5; // easier sucked in
 
         // Switch layer so you doesn't kick out player
         gameObject.layer = LayerMask.NameToLayer("Collide With Nothing");

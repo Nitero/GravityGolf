@@ -35,10 +35,6 @@ public class UiManager : MonoBehaviour
     }
 
 
-    void Update()
-    {
-
-    }
 
     
 
@@ -65,6 +61,7 @@ public class UiManager : MonoBehaviour
     }
 
 
+    // Mouse moving to show how to drag
     public void playtutorialAnimation()
     {
         if(!sceneSelectToggled)

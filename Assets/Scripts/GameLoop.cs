@@ -28,13 +28,7 @@ public class GameLoop : MonoBehaviour
 
 
 
-    public void didShot()
-    {
-        remainingShots--;
-        ui.displayShots(remainingShots);
-    }
-
-
+    // Move objects in scene, don't reload
     public void resetLevel()
     {
         //Reset environment
@@ -45,6 +39,14 @@ public class GameLoop : MonoBehaviour
 
         //Reset shots
         remainingShots = maxShots;
+        ui.displayShots(remainingShots);
+    }
+
+
+
+    public void didShot()
+    {
+        remainingShots--;
         ui.displayShots(remainingShots);
     }
 
@@ -68,6 +70,7 @@ public class GameLoop : MonoBehaviour
             {
                 Vector3 pos = Camera.main.WorldToViewportPoint(player.transform.position);
                 var rot = 0;
+
                 if (pos.x <= 0)
                 {
                     rot = 90;
@@ -91,6 +94,7 @@ public class GameLoop : MonoBehaviour
                     pos.y = 1;
                     ballVis.boundShake(new Vector2(0, 1), player.GetComponent<BallMovement>().getMagnitude());
                 }
+
                 Instantiate(deadDust, Camera.main.ViewportToWorldPoint(pos), Quaternion.Euler(0, 0, rot));
             }
         }

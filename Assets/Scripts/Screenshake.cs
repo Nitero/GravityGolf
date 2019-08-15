@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Screenshake : MonoBehaviour  // Old script, formerly translated from Pico-8 lua code
+public class Screenshake : MonoBehaviour  // Old script, formerly translated from some Pico-8 lua code
 {
     private Camera cam;
 
@@ -49,7 +49,7 @@ public class Screenshake : MonoBehaviour  // Old script, formerly translated fro
     // Update shake
     private void Update()
     {
-        trauma.x -= traumaFallOff; // is this the falloff? one every sec?  maybe use Time.deltaTime and * 
+        trauma.x -= traumaFallOff; // is this the "falloff"? one every sec?  maybe use Time.deltaTime and * 
         if (trauma.x <= 0) trauma.x = 0;
         if (trauma.x >= 1) trauma.x = 1;
         shake.x = Mathf.Pow(trauma.x, powerOfAllShakes);

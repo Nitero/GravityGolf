@@ -78,9 +78,11 @@ public class BallMovement : MonoBehaviour
     }
 
 
+
     void Update()
     {
-        //TODO: put this into a seperate input script (+ move trajectory and user drag indication to UI)
+        //TODO: move user input into seperate script
+        //TODO: move trajectory and user drag indication to UI
 
         if (useMouse)
         {
@@ -167,11 +169,13 @@ public class BallMovement : MonoBehaviour
     }
 
 
+
+
+
     private void FixedUpdate()
     {
         if (inTutorial) return;
-        
-
+       
         if (!insidePortal)
         {
             // Doing any input
@@ -196,7 +200,7 @@ public class BallMovement : MonoBehaviour
                     {
                         hideDragIndicationInstant();
                     }
-                    else
+                    else // do a shot
                     {
                         rb.velocity = rb.velocity * keptVelocityOnShot;
                         rb.gravityScale = 1;
@@ -289,6 +293,17 @@ public class BallMovement : MonoBehaviour
         return rb.velocity.magnitude;
     }
 
+
+
+    // Spawn animation
+    public void spawnFromPortal(Vector2 spawnPos)
+    {
+        transform.position = spawnPos;
+        visuals.spawnAnim();
+        rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
+    }
+
+    // Now won't come out of portal anymore
     public void didHitGoal(float shrinkDur, Ease ease, bool isGoal)
     {
         insidePortal = true;
@@ -337,7 +352,7 @@ public class BallMovement : MonoBehaviour
     }
 
 
-    // Show circles connected with a line under finger & start drag pos
+    // Show circles connected with a line under finger & at start dragging pos
     private void showDragIndication()
     {
         var inner = Camera.main.ScreenToWorldPoint(touchA);
@@ -360,7 +375,7 @@ public class BallMovement : MonoBehaviour
         dragIndication.SetActive(true);
     }
 
-    // Do quick animations of circles snapping together
+    // Do quick animations of circles snapping together after release
     private IEnumerator hideDragIndication()
     {
         var startPos = dragOutter.position;
@@ -384,10 +399,13 @@ public class BallMovement : MonoBehaviour
         dragIndication.SetActive(false);
     }
 
+
     public void hideDragIndicationInstant()
     {
         dragIndication.SetActive(false);
     }
+
+
 
 
     private bool IsPointerOverUIObject() //credit: https://answers.unity.com/questions/1073979/android-touches-pass-through-ui-elements.html
@@ -406,34 +424,33 @@ public class BallMovement : MonoBehaviour
         return originalPos;
     }
 
-    private void died() //bad practise: gets invoked, thus duplicates below with other params
-    {
-        //only effect on respawn pos, died in portal
 
+
+    //bad practise: get invoked, thus duplicates below with other params
+
+    private void died() //only effect on respawn pos, died in portal
+    {
         Destroy(dragIndication);
         mainLogic.resetLevel();
         mainLogic.respawnPlayer(false, true);
     }
 
-    private void diedBounds()
+    private void diedBounds() //effect on the edge of camera where died
     {
-        //effect on the edge of camera where died
-
         Destroy(dragIndication);
         mainLogic.resetLevel();
         mainLogic.respawnPlayer(true, false);
     }
 
-    public void restarted()
+    public void restarted() //just effect on the ball and former position
     {
-        //just effect on the ball and former position
-
         Destroy(dragIndication);
         mainLogic.resetLevel();
         mainLogic.respawnPlayer(false, false);
     }
 
     
+
 
     public void notInTut()
     {
@@ -443,14 +460,6 @@ public class BallMovement : MonoBehaviour
     public void hideSprite()
     {
         visuals.setSpriteEnabled(false);
-    }
-
-
-    public void spawnFromPortal(Vector2 spawnPos)
-    {
-        transform.position = spawnPos;
-        visuals.spawnAnim();
-        rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
     }
 }
 
